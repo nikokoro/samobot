@@ -4,19 +4,19 @@ import {gateway} from './connect.js';
 import {EventEmitter} from 'events';
 import {TestGatewayHandler} from '../test/gateway/event_handler.js';
 
-const handler = process.env.ENVIRONMENT === 'test' ?
+const GatewayHandler = process.env.ENVIRONMENT === 'test' ?
   TestGatewayHandler :
   new EventEmitter();
 
 if (process.env.ENVIRONMENT !== 'test') {
-  handler.on(0, (type, data) => {
+  GatewayHandler.on(0, (type, data) => {
     if (!EventHandler.emit(type, data)) {
       console.log(`Received event of type ${type}; doing nothing.`);
     }
   });
-  handler.on(1, heartbeat.beat);
-  handler.on(10, (type, data) => heartbeat.setup(data));
-  handler.on(11, heartbeat.ack);
+  GatewayHandler.on(1, heartbeat.beat);
+  GatewayHandler.on(10, (type, data) => heartbeat.setup(data));
+  GatewayHandler.on(11, heartbeat.ack);
   // TODO: Handle all receivable opcodes
 }
 
@@ -36,7 +36,7 @@ const receiveEvent = (data) => {
   }
   data = JSON.parse(data);
   gateway.seq = data.s;
-  if (!handler.emit(data.op, data.t, data.d)) {
+  if (!GatewayHandler.emit(data.op, data.t, data.d)) {
     console.log('Received message without opcode.');
     console.log(data.d);
     // TODO: Handle this by reconnecting.
