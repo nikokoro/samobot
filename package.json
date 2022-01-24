@@ -1,0 +1,29 @@
+{
+  "name": "samobot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikokoro/samobot.git"
+  },
+  "author": "niko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nikokoro/samobot/issues"
+  },
+  "homepage": "https://github.com/nikokoro/samobot#readme",
+  "dependencies": {
+    "got": "^12.0.1",
+    "ws": "^8.4.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.7.0",
+    "eslint-config-google": "^0.14.0",
+    "jest": "^27.4.7",
+    "prettier": "^2.5.1"
+  }
+}
