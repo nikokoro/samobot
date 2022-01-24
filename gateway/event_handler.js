@@ -1,4 +1,5 @@
 import * as heartbeat from './heartbeat.js';
+import EventService from '../services/events/index.js';
 
 let gateway = null;
 
@@ -39,7 +40,9 @@ const handleDispatch = (data) => {
   gateway.seq = data.s;
   switch (data.op) {
     case 0:
-      console.log(`Event of type "${data.t}" received`);
+      if (!EventService.emit(data.t, data.d)) {
+        console.log(`Received event of type ${data.t}; doing nothing.`);
+      }
       break;
     case 10:
       heartbeat.setup(data.d, gateway.send);
@@ -54,6 +57,7 @@ const handleDispatch = (data) => {
     default:
       // TODO: handle this by restarting connection?
       console.error('Received message without opcode.');
+      console.error(data);
   }
 };
 
