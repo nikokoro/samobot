@@ -1,4 +1,4 @@
-import {gateway} from 'connect.js';
+import {gateway} from './connect.js';
 
 let heartbeat;
 let acknowledged = true;

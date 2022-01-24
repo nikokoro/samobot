@@ -10,4 +10,4 @@ const EventHandler = new EventEmitter();
 
 EventHandler.on('MESSAGE_CREATE', messageCreate);
 
-export default new EventHandler;
+export default EventHandler;

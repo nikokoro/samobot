@@ -11,7 +11,7 @@ const handler = process.env.ENVIRONMENT === 'test' ?
 if (process.env.ENVIRONMENT !== 'test') {
   handler.on(0, (type, data) => {
     if (!EventHandler.emit(type, data)) {
-      console.log(`Received event of type ${data.t}; doing nothing.`);
+      console.log(`Received event of type ${type}; doing nothing.`);
     }
   });
   handler.on(1, heartbeat.beat);
@@ -45,7 +45,6 @@ const receiveEvent = (data) => {
 };
 
 const close = (code, reason) => {
-  gateway = null;
   // TODO: Reconnect based on close code
 };
 

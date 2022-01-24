@@ -5,4 +5,4 @@ import {EventEmitter} from 'events';
  */
 const TestGatewayHandler = new EventEmitter();
 
-export default TestGatewayHandler;
+export {TestGatewayHandler};

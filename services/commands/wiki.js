@@ -20,7 +20,7 @@ const createPayload = (term, message) => {
 
 export default (term, message) => {
   const payload = createPayload(term, message);
-  api.post(`/${channel}/messages`, payload);
+  api.post(`/channels/${message.channel_id}/messages`, payload);
 };
 
 export {createPayload as response};

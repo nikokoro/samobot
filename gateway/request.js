@@ -19,8 +19,8 @@ const post = (endpoint, payload, authenticated=true) => {
       {
         json: payload,
         headers: {
-          'authorization': authenticated ?
-            `bot ${process.env.dbot_token}` : '',
+          'Authorization': authenticated ?
+            `Bot ${process.env.dbot_token}` : '',
         },
       },
   ).json();
@@ -43,8 +43,8 @@ const get = (endpoint, authenticated=true) => {
       (process.env.API_URL || 'https://discord.com/api')+endpoint,
       {
         headers: {
-          'authorization': authenticated ?
-            `bot ${process.env.dbot_token}` : '',
+          'Authorization': authenticated ?
+            `Bot ${process.env.dbot_token}` : '',
         },
       },
   ).json();
