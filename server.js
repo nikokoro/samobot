@@ -8,8 +8,6 @@ if (!process.env.DBOT_TOKEN) {
   console.error(`No TOKEN environment variable set! Please set to a valid
     Discord bot authentication token.`);
   process.exit(1);
-} else {
-  console.log(process.env.DBOT_TOKEN);
 }
 
 process.env['SAMOBOT_VERSION'] = pjson.version;

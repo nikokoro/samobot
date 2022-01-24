@@ -45,7 +45,6 @@ const beat = () => {
 };
 
 const ack = () => {
-  console.log('Heartbeat acknowledged.');
   acknowledged = true;
 };
 
