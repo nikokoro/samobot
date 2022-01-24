@@ -3,16 +3,11 @@ import {EventEmitter} from 'events';
 import messageCreate from './message_create.js';
 
 /**
- * Service to redirect events to their proper handlers.
+ * Handler that receives Discord events like messages, DMs, Guild updates, etc.
+ * and emits them to different event listeners.
  */
-class EventService extends EventEmitter {
-  /**
-   * Constructs a new EventService.
-   */
-  constructor() {
-    super();
-    this.on('MESSAGE_CREATE', messageCreate);
-  }
-}
+const EventHandler = new EventEmitter();
 
-export default new EventService();
+EventHandler.on('MESSAGE_CREATE', messageCreate);
+
+export default new EventHandler;
