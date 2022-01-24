@@ -1,22 +1,24 @@
+import {EventEmitter} from 'events';
+
 import wiki from './wiki.js';
+import unknown from './unknown.js';
+
+/** Register commands and their handlers with CommandService to be used. */
+const CommandService = new EventEmitter();
+CommandService.on('wiki', wiki);
+// CommandService.on('help', help);
+// CommandService.on('', help);
 
 /**
  * Parse and execute a command by redirecting to the appropriate handler.
  *
- * @param {array} parameters - The full command issued, split by spaces.
+ * @param {string} command - The command keyword issued.
+ * @param {string} parameters - The parameters issued to the command.
  * @param {object} message - The raw message object of the command.
  */
-const parseCommand = (parameters, message) => {
-  if (parameters.length == 0) {
-    // TODO: Display help on empty command
-    return;
-  }
-  const command = parameters.shift();
-  switch (command) {
-    case 'wiki':
-      wiki(parameters.join(' '), message);
-      break;
-    default:
+const parseCommand = (command, parameters, message) => {
+  if (!CommandService.emit(command, parameters, message)) {
+    unknown(command, message);
   }
 };
 
