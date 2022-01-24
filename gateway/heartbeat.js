@@ -1,15 +1,7 @@
-let heartbeat;
-let gateway;
-let acknowledged = true;
+import {gateway} from 'connect.js';
 
-/**
- * Use the given WebSocket to emit events.
- *
- * @param {WebSocket} socket - The WebSocket to use.
- */
-const linkGateway = (socket) => {
-  gateway = socket;
-};
+let heartbeat;
+let acknowledged = true;
 
 /**
  * Setup heartbeat on specified interval from 'Hello' event.
@@ -23,9 +15,11 @@ const setup = (data) => {
 };
 
 const beat = () => {
+  if (!gateway) {
+    throw new Error('Tried to send heartbeat, but gateway is not set up');
+  }
   if (!acknowledged) {
-    console.error('Not acknowledged!');
-    process.exit(1);
+    throw new Error('Heartbeat not acknowledged by server');
     // TODO: Actually reconnect to the gateway
   }
   gateway.send(JSON.stringify({'op': 1, 'd': gateway.seq}));
@@ -52,4 +46,4 @@ const stop = () => {
   clearInterval(heartbeat);
 };
 
-export {linkGateway, setup, beat, ack, stop};
+export {setup, beat, ack, stop};

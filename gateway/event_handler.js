@@ -1,17 +1,6 @@
 import * as heartbeat from './heartbeat.js';
 import EventService from '../services/events/index.js';
-
-let gateway = null;
-
-/**
- * Use the given WebSocket to emit events.
- *
- * @param {WebSocket} socket - The WebSocket to use.
- */
-const linkGateway = (socket) => {
-  gateway = socket;
-  heartbeat.linkGateway(socket);
-};
+import {gateway} from './connect.js';
 
 /**
  * Parses data from incoming gateway events, and routes them to the appropriate
@@ -45,10 +34,10 @@ const handleDispatch = (data) => {
       }
       break;
     case 10:
-      heartbeat.setup(data.d, gateway.send);
+      heartbeat.setup(data.d);
     case 1:
       // TODO: reconnect on no heartbeat ack
-      heartbeat.beat(gateway.send);
+      heartbeat.beat();
       break;
     // TODO: implement more opcode responses
     case 11:
@@ -68,4 +57,4 @@ const close = () => {
   gateway = null;
 };
 
-export {linkGateway, receiveEvent, close};
+export {receiveEvent, close};

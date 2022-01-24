@@ -1,14 +1,14 @@
-import got from 'got';
 import {WebSocket} from 'ws';
 
 import * as eventHandler from './event_handler.js';
+import * as api from './request.js';
 
 let gateway = null;
 
 const connect = async () => {
   let gatewayURL;
   try {
-    gatewayURL = await got.get('https://discord.com/api/gateway').json();
+    gatewayURL = await api.get('/gateway', false).json();
   } catch (err) {
     console.error(error.response.body);
     process.exit(1);
@@ -16,11 +16,11 @@ const connect = async () => {
   gateway = new WebSocket(gatewayURL.url + '?v=9&encoding=json');
   gateway.seq = null;
 
-  eventHandler.linkGateway(gateway);
-
   gateway.on('message', eventHandler.receiveEvent);
   gateway.on('close', eventHandler.close);
   gateway.on('open', sendIdentify);
+
+  return gateway;
 };
 
 const sendIdentify = () => {
@@ -50,3 +50,4 @@ const sendIdentify = () => {
 };
 
 export default connect;
+export {gateway};

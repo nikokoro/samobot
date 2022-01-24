@@ -1,10 +1,10 @@
-import sendMessage from '../../gateway/send_message.js';
+import * as api from '../../gateway/request.js';
 
-export default (term, message) => {
+const createPayload = (term, message) => {
   // TODO: fuzzy matching for wiki terms
   const underscoredTerm = term.split(' ').join('_');
   const link = 'https://housamo.wiki/'+underscoredTerm;
-  const payload = {
+  return {
     'content': null,
     'embeds': [{
       'title': 'Link to wiki page',
@@ -16,5 +16,11 @@ export default (term, message) => {
       'message_id': message.id,
     },
   };
-  sendMessage(message.channel_id, payload);
 };
+
+export default (term, message) => {
+  const payload = createPayload(term, message);
+  api.post(`/${channel}/messages`, payload);
+};
+
+export {createPayload as response};
