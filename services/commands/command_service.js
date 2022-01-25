@@ -42,6 +42,9 @@ export class Command {
       delete payload.data;
     }
 
+    // Make the message a reply
+    payload.message_reference = {'message_id': message.id};
+
     api.post(`/channels/${message.channel_id}/messages`, payload);
 
     if (typeof this.postExecute === 'function') {
