@@ -1,7 +1,7 @@
 import * as api from '../../gateway/request.js';
 
-const createPayload = (command, message) => {
-  return {
+export default (command, message) => {
+  const payload = {
     'content': null,
     'embeds': [{
       'title': 'Unknown command',
@@ -13,11 +13,5 @@ const createPayload = (command, message) => {
       'message_id': message.id,
     },
   };
-};
-
-export default (command, message) => {
-  const payload = createPayload(command, message);
   api.post(`/channels/${message.channel_id}/messages`, payload);
 };
-
-export {createPayload as response};

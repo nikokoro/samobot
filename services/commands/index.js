@@ -1,13 +1,8 @@
-import {EventEmitter} from 'events';
+import CommandService from './command_service.js';
 
-import wiki from './wiki.js';
-import unknown from './unknown.js';
-
-/** Register commands and their handlers with CommandService to be used. */
-const CommandService = new EventEmitter();
-CommandService.on('wiki', wiki);
-// CommandService.on('help', help);
-// CommandService.on('', help);
+/** Commands */
+import './wiki.js';
+import issueUnknownCommand from './unknown.js';
 
 /**
  * Parse and execute a command by redirecting to the appropriate handler.
@@ -18,7 +13,7 @@ CommandService.on('wiki', wiki);
  */
 const parseCommand = (command, parameters, message) => {
   if (!CommandService.emit(command, parameters, message)) {
-    unknown(command, message);
+    issueUnknownCommand(command, message);
   }
 };
 

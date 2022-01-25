@@ -1,6 +1,6 @@
-import * as api from '../../gateway/request.js';
+import {Command} from './command_service.js';
 
-const createPayload = (term, message) => {
+export default new Command('wiki', (term, message) => {
   // TODO: fuzzy matching for wiki terms
   const underscoredTerm = term.split(' ').join('_');
   const link = 'https://housamo.wiki/'+underscoredTerm;
@@ -16,11 +16,4 @@ const createPayload = (term, message) => {
       'message_id': message.id,
     },
   };
-};
-
-export default (term, message) => {
-  const payload = createPayload(term, message);
-  api.post(`/channels/${message.channel_id}/messages`, payload);
-};
-
-export {createPayload as response};
+});
