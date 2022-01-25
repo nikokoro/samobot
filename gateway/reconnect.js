@@ -45,7 +45,7 @@ ReconnectHandler.on(4009, forceNewSession);
  */
 export const reconnect = async (resume) => {
   console.log('Received signal to reconnect '+
-    resume ? 'and resume.' : 'without resuming.');
+    (resume ? 'and resume.' : 'without resuming.'));
   if (!resume) {
     // Throw away this session to prevent attempts at resuming
     console.log('Throwing away session_id...');
@@ -65,7 +65,7 @@ export const handleDisconnect = (code, reason) => {
   const seq = gateway.seq;
   const sessionId = gateway.session_id;
   if (reason) {
-    console.warn('Reason:', reason);
+    console.warn('Reason:', reason.toString());
   }
   if (!ReconnectHandler.emit(code, seq, sessionId)) {
     console.error('Cannot reconnect.');
