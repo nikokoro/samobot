@@ -1,7 +1,10 @@
+import {EventEmitter} from 'events';
+
 import * as heartbeat from './heartbeat.js';
 import EventHandler from '../services/events/index.js';
 import {gateway} from './connect.js';
-import {EventEmitter} from 'events';
+import {reconnect, handleDisconnect} from './reconnect.js';
+
 import {TestGatewayHandler} from '../test/gateway/event_handler.js';
 
 const GatewayHandler = process.env.ENVIRONMENT === 'test' ?
@@ -15,9 +18,10 @@ if (process.env.ENVIRONMENT !== 'test') {
     }
   });
   GatewayHandler.on(1, heartbeat.beat);
+  GatewayHandler.on(7, () => reconnect(true));
+  GatewayHandler.on(9, (t, d) => reconnect(d));
   GatewayHandler.on(10, (type, data) => heartbeat.setup(data));
   GatewayHandler.on(11, heartbeat.ack);
-  // TODO: Handle all receivable opcodes
 }
 
 /**
@@ -37,15 +41,11 @@ const receiveEvent = (data) => {
   data = JSON.parse(data);
   gateway.seq = data.s;
   if (!GatewayHandler.emit(data.op, data.t, data.d)) {
-    console.log('Received message without opcode.');
+    console.log('Received message without valid opcode.');
     console.log(data.d);
     // TODO: Handle this by reconnecting.
   }
   return data.op;
 };
 
-const close = (code, reason) => {
-  // TODO: Reconnect based on close code
-};
-
-export {receiveEvent, close};
+export {receiveEvent};

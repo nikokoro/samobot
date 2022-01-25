@@ -3,28 +3,33 @@ import {WebSocket} from 'ws';
 import * as eventHandler from './event_handler.js';
 import * as api from './request.js';
 
+import {handleDisconnect} from './reconnect.js';
+
 let gateway = null;
 
-const connect = async () => {
-  let gatewayURL;
-  try {
-    gatewayURL = await api.get('/gateway', false).json();
-  } catch (err) {
-    console.error(error.response.body);
-    process.exit(1);
-  }
+/**
+ * Initializes a connection without authenticating.
+ * @return {Promise} Resolves when the connection is open.
+ */
+const initConnection = async () => {
+  const gatewayURL = await api.get('/gateway', false).json();
+  // TODO: Add sharding support
   gateway = new WebSocket(gatewayURL.url + '?v=9&encoding=json');
-  gateway.seq = null;
 
   gateway.on('message', eventHandler.receiveEvent);
-  gateway.on('close', eventHandler.close);
-  gateway.on('open', sendIdentify);
-
-  return gateway;
+  gateway.on('close', handleDisconnect);
+  return new Promise((resolve) => {
+    gateway.on('open', resolve);
+  });
 };
 
-const sendIdentify = () => {
-  console.log('Initialized connection; authenticating.');
+/** Begin first connection to Discord gateway. */
+const connect = () => {
+  initConnection().then(authenticate);
+};
+
+/** Send an IDENTIFY payload. */
+const authenticate = () => {
   const token = process.env.DBOT_TOKEN;
   gateway.send(JSON.stringify({
     'op': 2,
@@ -50,4 +55,4 @@ const sendIdentify = () => {
 };
 
 export default connect;
-export {gateway};
+export {gateway, authenticate, initConnection};

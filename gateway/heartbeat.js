@@ -1,4 +1,5 @@
 import {gateway} from './connect.js';
+import {reconnect} from './reconnect.js';
 
 let heartbeat;
 let acknowledged = true;
@@ -19,8 +20,9 @@ const beat = () => {
     throw new Error('Tried to send heartbeat, but gateway is not set up');
   }
   if (!acknowledged) {
-    throw new Error('Heartbeat not acknowledged by server');
-    // TODO: Actually reconnect to the gateway
+    console.warn('Heartbeat not acknowledged. Connection possibly dead; '+
+      'reconnecting.');
+    reconnect(true);
   }
   gateway.send(JSON.stringify({'op': 1, 'd': gateway.seq}));
   gateway.send(JSON.stringify({
