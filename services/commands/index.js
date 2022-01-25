@@ -2,6 +2,7 @@ import CommandService from './command_service.js';
 
 /** Commands */
 import './wiki.js';
+import './help.js';
 import issueUnknownCommand from './unknown.js';
 
 /**
