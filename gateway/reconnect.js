@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events';
 
-import {gateway, authenticate, initConnection} from './connect.js';
+import {Gateway, authenticate, initConnection} from './connect.js';
 
 const tryResume = async (seq, id) => {
   console.log('Attempting to reconnect...');
@@ -14,7 +14,7 @@ const tryResume = async (seq, id) => {
         'seq': seq,
       },
     };
-    gateway.send(JSON.stringify(resumePayload));
+    Gateway.send(JSON.stringify(resumePayload));
   } else {
     console.log('No stored session ID. Re-authenticating...');
     authenticate();
@@ -49,10 +49,10 @@ export const reconnect = async (resume) => {
   if (!resume) {
     // Throw away this session to prevent attempts at resuming
     console.log('Throwing away session_id...');
-    gateway.session_id = null;
+    Gateway.session_id = null;
   }
   console.log('Disconnecting gateway...');
-  gateway.close(4000);
+  Gateway.close(4000);
 };
 
 /**
@@ -62,8 +62,8 @@ export const reconnect = async (resume) => {
  */
 export const handleDisconnect = (code, reason) => {
   console.log('Disconnected from gateway with code '+code);
-  const seq = gateway.seq;
-  const sessionId = gateway.session_id;
+  const seq = Gateway.seq;
+  const sessionId = Gateway.session_id;
   if (reason) {
     console.warn('Reason:', reason.toString());
   }

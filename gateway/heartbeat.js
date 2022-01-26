@@ -1,4 +1,4 @@
-import {gateway} from './connect.js';
+import {Gateway} from './connect.js';
 import {reconnect} from './reconnect.js';
 
 let heartbeat;
@@ -16,7 +16,7 @@ const setup = (data) => {
 };
 
 const beat = () => {
-  if (!gateway) {
+  if (!Gateway) {
     throw new Error('Tried to send heartbeat, but gateway is not set up');
   }
   if (!acknowledged) {
@@ -24,8 +24,8 @@ const beat = () => {
       'reconnecting.');
     reconnect(true);
   }
-  gateway.send(JSON.stringify({'op': 1, 'd': gateway.seq}));
-  gateway.send(JSON.stringify({
+  Gateway.send(JSON.stringify({'op': 1, 'd': Gateway.seq}));
+  Gateway.send(JSON.stringify({
     'op': 3,
     'd': {
       'since': null,

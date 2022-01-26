@@ -5,7 +5,7 @@ import * as api from './request.js';
 
 import {handleDisconnect} from './reconnect.js';
 
-let gateway = null;
+let Gateway = null;
 
 /**
  * Initializes a connection without authenticating.
@@ -14,12 +14,12 @@ let gateway = null;
 const initConnection = async () => {
   const gatewayURL = await api.get('/gateway', false).json();
   // TODO: Add sharding support
-  gateway = new WebSocket(gatewayURL.url + '?v=9&encoding=json');
+  Gateway = new WebSocket(gatewayURL.url + '?v=9&encoding=json');
 
-  gateway.on('message', eventHandler.receiveEvent);
-  gateway.on('close', handleDisconnect);
+  Gateway.on('message', eventHandler.receiveEvent);
+  Gateway.on('close', handleDisconnect);
   return new Promise((resolve) => {
-    gateway.on('open', resolve);
+    Gateway.on('open', resolve);
   });
 };
 
@@ -31,7 +31,7 @@ const connect = () => {
 /** Send an IDENTIFY payload. */
 const authenticate = () => {
   const token = process.env.DBOT_TOKEN;
-  gateway.send(JSON.stringify({
+  Gateway.send(JSON.stringify({
     'op': 2,
     'd': {
       'token': token,
@@ -55,4 +55,4 @@ const authenticate = () => {
 };
 
 export default connect;
-export {gateway, authenticate, initConnection};
+export {Gateway, authenticate, initConnection};

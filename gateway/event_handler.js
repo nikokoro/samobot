@@ -2,7 +2,7 @@ import {EventEmitter} from 'events';
 
 import * as heartbeat from './heartbeat.js';
 import EventHandler from '../services/events/index.js';
-import {gateway} from './connect.js';
+import {Gateway} from './connect.js';
 import {reconnect, handleDisconnect} from './reconnect.js';
 
 import {TestGatewayHandler} from '../test/gateway/event_handler.js';
@@ -34,12 +34,12 @@ if (process.env.ENVIRONMENT !== 'test') {
  * @return {integer} The opcode of the event.
  */
 const receiveEvent = (data) => {
-  if (!gateway) {
+  if (!Gateway) {
     console.error('Tried to receive event, but no WebSocket connected');
     return;
   }
   data = JSON.parse(data);
-  gateway.seq = data.s;
+  Gateway.seq = data.s;
   if (!GatewayHandler.emit(data.op, data.t, data.d)) {
     console.log('Received message without valid opcode.');
     console.log(data.d);
