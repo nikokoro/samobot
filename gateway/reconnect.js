@@ -1,74 +1,64 @@
-import {EventEmitter} from 'events';
+import {authenticate} from './authenticate.js';
 
-import {Gateway, authenticate, initConnection} from './connect.js';
+/**
+  * Fatal close codes.
+  * @type {!Array<number>}
+  */
+const FATAL_CLOSE_CODES = [4004, 4006, 4010, 4011, 4012, 4013, 4014];
 
-const tryResume = async (seq, id) => {
+/**
+  * Close codes indicating we shouldn't attempt to resume.
+  * @type {!Array<number>}
+  */
+const RENEW_SESSION_CLOSE_CODES = [4003, 4007, 4009];
+
+const tryResume = async (gateway) => {
+  const seq = gateway.seq;
+  const id = gateway.session_id;
   console.log('Attempting to reconnect...');
-  await initConnection();
+  await gateway.initConnection();
   if (id) {
-    const resumePayload = {
-      'op': 6,
-      'd': {
-        'token': process.env.DBOT_TOKEN,
-        'session_id': id,
-        'seq': seq,
-      },
-    };
-    Gateway.send(JSON.stringify(resumePayload));
+    gateway.send(6, {
+      'token': process.env.DBOT_TOKEN,
+      'session_id': id,
+      'seq': seq,
+    });
+    gateway.events.once('RESUME', () => {
+      console.log('Playback of missed events finished. Resuming '+
+        'business-as-usual.');
+    });
   } else {
     console.log('No stored session ID. Re-authenticating...');
-    authenticate();
+    authenticate(gateway);
   }
 };
 
-const forceNewSession = async () => {
+const forceNewSession = async (gateway) => {
   console.log('Attempting to reconnect, forcing new session...');
-  await initConnection();
+  await gateway.initConnection();
   console.log('Re-authenticating...');
-  authenticate();
-};
-
-const ReconnectHandler = new EventEmitter();
-
-ReconnectHandler.on(4000, tryResume);
-ReconnectHandler.on(4001, tryResume);
-ReconnectHandler.on(4002, tryResume);
-ReconnectHandler.on(4003, forceNewSession);
-ReconnectHandler.on(4005, tryResume);
-ReconnectHandler.on(4007, forceNewSession);
-ReconnectHandler.on(4008, tryResume);
-ReconnectHandler.on(4009, forceNewSession);
-
-/**
- * Disconnect from the gateway, and attempt to reconnect and resume.
- * @param {boolean} resume - Whether to resume the session or not.
- */
-export const reconnect = async (resume) => {
-  console.log('Received signal to reconnect '+
-    (resume ? 'and resume.' : 'without resuming.'));
-  if (!resume) {
-    // Throw away this session to prevent attempts at resuming
-    console.log('Throwing away session_id...');
-    Gateway.session_id = null;
-  }
-  console.log('Disconnecting gateway...');
-  Gateway.close(4000);
+  authenticate(gateway);
 };
 
 /**
- * Handle a disconnection, and emit the close code to the ReconnectHandler
- * @param {number} code - The close code received by the gateway.
+ * Reconnect to and/or resume a Gateway depending on close code.
+ *
+ * @param {Gateway} gateway
+ * @param {int} code - The close code received by the gateway.
  * @param {string} reason - The reason for closing the connection.
+ * @throws Will throw an error if code is fatal and we shouldn't reconnect.
  */
-export const handleDisconnect = (code, reason) => {
+export const handleDisconnect = (gateway, code, reason) => {
   console.log('Disconnected from gateway with code '+code);
-  const seq = Gateway.seq;
-  const sessionId = Gateway.session_id;
   if (reason) {
     console.warn('Reason:', reason.toString());
   }
-  if (!ReconnectHandler.emit(code, seq, sessionId)) {
-    console.error('Cannot reconnect.');
+  if (code in FATAL_CLOSE_CODES) {
     throw new Error(reason);
+  }
+  if (code in RENEW_SESSION_CLOSE_CODES) {
+    forceNewSession(gateway);
+  } else {
+    tryResume(gateway);
   }
 };

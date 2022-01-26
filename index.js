@@ -1,7 +1,10 @@
-import connect from './gateway/connect.js';
+import {load} from './loaders/index.js';
+
+// TODO: Move to config
 import {createRequire} from 'module';
 const require = createRequire(import.meta.url);
 const pjson = require('./package.json');
+process.env['SAMOBOT_VERSION'] = pjson.version;
 
 require('dotenv').config();
 if (!process.env.DBOT_TOKEN) {
@@ -10,7 +13,6 @@ if (!process.env.DBOT_TOKEN) {
   process.exit(1);
 }
 
-process.env['SAMOBOT_VERSION'] = pjson.version;
 console.log('Samobot v' + process.env.SAMOBOT_VERSION);
-console.log('Initializing Discord gateway client.');
-connect();
+console.log('Initializing.');
+load();

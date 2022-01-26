@@ -1,43 +1,41 @@
-import {Gateway} from './connect.js';
-import {reconnect} from './reconnect.js';
-
 let heartbeat;
 let acknowledged = true;
 
 /**
- * Setup heartbeat on specified interval from 'Hello' event.
- *
- * @param {object} data - The raw payload received from the event.
+ * Send a heartbeat signal through the given Gateway.
+ * @param {Gateway} gateway
  */
-const setup = (data) => {
-  console.log('Heartbeat established: updating every ' +
-    data.heartbeat_interval + 'ms.');
-  heartbeat = setInterval(beat, data.heartbeat_interval);
-};
-
-const beat = () => {
-  if (!Gateway) {
-    throw new Error('Tried to send heartbeat, but gateway is not set up');
-  }
+const beat = (gateway) => {
   if (!acknowledged) {
     console.warn('Heartbeat not acknowledged. Connection possibly dead; '+
       'reconnecting.');
-    reconnect(true);
+    gateway.reconnect(true);
   }
-  Gateway.send(JSON.stringify({'op': 1, 'd': Gateway.seq}));
-  Gateway.send(JSON.stringify({
-    'op': 3,
-    'd': {
-      'since': null,
-      'activities': [{
-        'name': 'Tokyo Afterschool Summoners',
-        'type': 0,
-      }],
-      'status': 'online',
-      'afk': false,
-    },
-  }));
+  gateway.send(1, gateway.seq);
+  gateway.send(3,
+      {
+        'since': null,
+        'activities': [{
+          'name': 'Tokyo Afterschool Summoners',
+          'type': 0,
+        }],
+        'status': 'online',
+        'afk': false,
+      },
+  );
   acknowledged = false;
+};
+
+/**
+ * Sets up heartbeating to the given Gateway.
+ *
+ * @param {Gateway} gateway
+ * @param {int} interval - The time in milliseconds to wait in between beats.
+ */
+const setup = (gateway, interval) => {
+  console.log('Heartbeat established: updating every ' +
+      interval + 'ms.');
+  heartbeat = setInterval(() => beat(gateway), interval);
 };
 
 const ack = () => {
@@ -48,4 +46,4 @@ const stop = () => {
   clearInterval(heartbeat);
 };
 
-export {setup, beat, ack, stop};
+export {beat, setup, ack, stop};

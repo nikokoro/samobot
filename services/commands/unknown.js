@@ -1,12 +1,4 @@
-import * as api from '../../gateway/request.js';
-
-/**
- * Returns an 'unknown command' message payload.
- *
- * @param {string} input - The invalid command issued.
- * @return {object} The Discord message payload.
- */
-const generatePayload = (input) => {
+export const unknownCommandPayload = (input) => {
   if (input == '') {
     input = 'that';
   } else {
@@ -22,13 +14,3 @@ const generatePayload = (input) => {
     }],
   };
 };
-
-export default (command, message) => {
-  const payload = generatePayload(command);
-  // Make the message a reply
-  payload.message_reference = {'message_id': message.id};
-
-  api.post(`/channels/${message.channel_id}/messages`, payload);
-};
-
-export {generatePayload};
