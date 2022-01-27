@@ -1,5 +1,7 @@
 import {authenticate} from './authenticate.js';
 
+// TODO: Following close codes should be in configuration..?
+
 /**
   * Fatal close codes.
   * @type {!Array<number>}
@@ -53,10 +55,10 @@ export const handleDisconnect = (gateway, code, reason) => {
   if (reason) {
     console.warn('Reason:', reason.toString());
   }
-  if (code in FATAL_CLOSE_CODES) {
+  if (FATAL_CLOSE_CODES.includes(code)) {
     throw new Error(reason);
   }
-  if (code in RENEW_SESSION_CLOSE_CODES) {
+  if (RENEW_SESSION_CLOSE_CODES.includes(code)) {
     forceNewSession(gateway);
   } else {
     tryResume(gateway);

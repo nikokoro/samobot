@@ -23,7 +23,7 @@ export const helpCommand = (service) => {
         command = command.split(' ')[0];
         if (command != '') {
         // Display help page for individual command
-          const c = events.commands.find((c) => c.name == command);
+          const c = service.commands[command];
           if (c === undefined) {
             return unknownCommandPayload(command);
           }
@@ -48,7 +48,8 @@ export const helpCommand = (service) => {
           };
         }
         // Display command list and usages
-        const commandList = CommandService.commands.map((c) => {
+        const commandList = Object.keys(service.commands).map((c) => {
+          c = service.commands[c];
           return {
             'name': `s!${c.name}`,
             'value': `Usage: \`${c.help.usage}\``,

@@ -20,19 +20,18 @@ export class CommandService {
     if (!this.commands.hasOwnProperty(keyword)) {
       return unknownCommandPayload(keyword);
     }
-    return await this.commands[keyword].execute();
+    return await this.commands[keyword].execute(parameters, message);
   }
 
   /**
    * Register this command with the CommandService.
-   * @param {string} keyword - The keyword to execute this command with.
-   * @param {Command} command - The command to execute.
+   * @param {Command} command - The command to register.
    */
-  register(keyword, command) {
-    if (this.commands[keyword]) {
+  register(command) {
+    if (this.commands[command.name]) {
       throw new Error('Tried to register duplicate command');
     }
-    this.commands[keyword] = command;
+    this.commands[command.name] = command;
   }
 };
 

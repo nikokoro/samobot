@@ -16,24 +16,24 @@ export class ApiService extends EventEmitter {
     this.url = process.env.API_URL || 'https://discord.com/api';
     if (!testing) {
       this.on('GET', (endpoint, authenticated, resolve, reject) => {
-        return got.get(
+        got.get(
             (process.env.API_URL || 'https://discord.com/api') + endpoint,
             {
               headers: {
                 'Authorization': authenticated ?
-                `Bot ${process.env.dbot_token}` : '',
+                `Bot ${process.env.DBOT_TOKEN}` : '',
               },
             },
         ).json().then(resolve).catch(reject);
       });
-      this.on('POST', (endpoint, payload, authenticated, res, rej) => {
+      this.on('POST', (endpoint, payload, authenticated, resolve, reject) => {
         got.post(
             this.url+endpoint,
             {
               json: payload,
               headers: {
                 'Authorization': authenticated ?
-                `Bot ${process.env.dbot_token}` : '',
+                `Bot ${process.env.DBOT_TOKEN}` : '',
               },
             },
         ).json().then(resolve).catch(reject);

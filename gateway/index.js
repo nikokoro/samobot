@@ -21,7 +21,6 @@ export class Gateway extends EventEmitter {
     this.api = api;
 
     this.on(0, (type, data) => {
-      console.log(`Received event ${type}.`);
       if (!this.events.emit(type, data)) {
         console.log(`Received event ${type}.`);
       }
@@ -87,7 +86,6 @@ export class Gateway extends EventEmitter {
       console.warn('Tried to send invalid opcode to gateway.');
     }
     let payload = {op: op, d: data};
-    console.log(payload);
     payload = JSON.stringify(payload);
     this.webSocket.send(payload);
     return true;
