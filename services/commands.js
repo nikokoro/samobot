@@ -1,4 +1,4 @@
-import {unknownCommandPayload} from './commands/unknown.js';
+import {unknownCommandPayload} from '../commands/unknown.js';
 
 /**
  * Service that parses commands, and routes them to the registered handler.
@@ -35,4 +35,4 @@ export class CommandService {
   }
 };
 
-export {registerAllCommands} from './commands/index.js';
+export {registerAllCommands} from '../commands';
